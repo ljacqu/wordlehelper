@@ -46,7 +46,6 @@ public class GameDataCreator {
 
     public static final class CharCountPredicateBuilder {
 
-        // todo check if better to initialize map without size?
         private final Map<Character, CharCountPredicate> predicatesByChar = new HashMap<>(WORD_LENGTH);
 
         public void register(Character chr, Color color) {

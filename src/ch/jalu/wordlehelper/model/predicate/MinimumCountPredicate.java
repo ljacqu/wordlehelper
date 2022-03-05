@@ -39,12 +39,10 @@ public final class MinimumCountPredicate implements CharCountPredicate {
     public CharCountPredicate merge(CharCountPredicate other) {
         if (this == other) {
             return this;
-        }
-        if (other instanceof HasExactCountPredicate o) {
+        } else if (other instanceof HasExactCountPredicate o) {
             return o;
-            // todo use o.merge(this);
         } else if (other instanceof MinimumCountPredicate o) {
-            return this.minimumCount >= o.minimumCount ? this : o;
+            return this.minimumCount > o.minimumCount ? this : o;
         } else {
             throw new IllegalStateException("Unexpected predicate to merge with of class " + other.getClass());
         }

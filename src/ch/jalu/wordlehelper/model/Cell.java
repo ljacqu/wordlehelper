@@ -1,21 +1,16 @@
 package ch.jalu.wordlehelper.model;
 
-public record Cell(char character, Color color) {
+public record Cell(Character character, Color color) {
 
-    public Cell(char character, Color color) {
-        this.character = Character.toUpperCase(character);
-        this.color = color;
-    }
-
-    public static Cell green(char chr) {
+    public static Cell green(Character chr) {
         return new Cell(chr, Color.GREEN);
     }
 
-    public static Cell yellow(char chr) {
+    public static Cell yellow(Character chr) {
         return new Cell(chr, Color.YELLOW);
     }
 
-    public static Cell gray(char chr) {
+    public static Cell gray(Character chr) {
         return new Cell(chr, Color.GRAY);
     }
 }
