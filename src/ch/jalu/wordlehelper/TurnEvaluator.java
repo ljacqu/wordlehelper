@@ -28,7 +28,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
-import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -175,7 +174,7 @@ public class TurnEvaluator {
             retainTopKeys(scoreByRemainingWords, 10);
             System.out.println(scoreByRemainingWords);
         } else {
-            throw new IllegalStateException("Found " + possibleWords.size() + ", which is not within bounds for this action");
+            throw new IllegalStateException("Found " + possibleWords.size() + " possible words, which is not within bounds for this action");
         }
     }
 
@@ -213,11 +212,7 @@ public class TurnEvaluator {
             }
         }
 
-        Map<Character, IntPredicate> predicatesByChar = new HashMap<>(WORD_LENGTH);
-        for (Map.Entry<Character, CharCountPredicate> entry : colorCounter.getPredicatesByChar().entrySet()) {
-            predicatesByChar.put(entry.getKey(), entry.getValue().getIntPredicate());
-        }
-
+        Map<Character, CharCountPredicate> predicatesByChar = colorCounter.getPredicatesByChar();
         Predicate<String> predicate = inspectedWord -> {
             // Interestingly, using CharCountContainer in here instead of a Map directly seems to perform slightly better
             CharCountContainer charCount = new CharCountContainer();
@@ -228,9 +223,9 @@ public class TurnEvaluator {
                 }
                 charCount.add(chr);
             }
-            for (Map.Entry<Character, IntPredicate> entry : predicatesByChar.entrySet()) {
+            for (Map.Entry<Character, CharCountPredicate> entry : predicatesByChar.entrySet()) {
                 Integer count = charCount.getCount(entry.getKey());
-                if (!entry.getValue().test(count)) {
+                if (!entry.getValue().matches(count)) {
                     return false;
                 }
             }
@@ -290,14 +285,14 @@ public class TurnEvaluator {
 
     private BigDecimal[] evaluateNewInformation(WordleResultData resultData, String word, String result,
                                                 Map<Character, BigDecimal> frequencyByChar) {
-        GameDataCreator.CharCountPredicateBuilder colorCounter = new GameDataCreator.CharCountPredicateBuilder();
         List<Cell> cells = wordleTurnEvaluator.evaluateCells(word, result);
-        BigDecimal score = BigDecimal.ZERO;
-        BigDecimal scoreWeighted = BigDecimal.ZERO;
+        GameDataCreator.CharCountPredicateBuilder colorCounter = new GameDataCreator.CharCountPredicateBuilder();
         for (Cell cell : cells) {
             colorCounter.register(cell.character(), cell.color());
         }
 
+        BigDecimal score = BigDecimal.ZERO;
+        BigDecimal scoreWeighted = BigDecimal.ZERO;
         for (Map.Entry<Character, CharCountPredicate> entry : colorCounter.getPredicatesByChar().entrySet()) {
             Character character = entry.getKey();
             CharCountPredicate newPredicate = entry.getValue();

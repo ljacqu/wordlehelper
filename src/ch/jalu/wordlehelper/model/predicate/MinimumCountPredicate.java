@@ -2,8 +2,6 @@ package ch.jalu.wordlehelper.model.predicate;
 
 import ch.jalu.wordlehelper.model.Color;
 
-import java.util.function.IntPredicate;
-
 import static ch.jalu.wordlehelper.Constants.WORD_LENGTH;
 
 public final class MinimumCountPredicate implements CharCountPredicate {
@@ -11,11 +9,9 @@ public final class MinimumCountPredicate implements CharCountPredicate {
     private static final MinimumCountPredicate[] CACHE = createCache();
 
     private final int minimumCount;
-    private final IntPredicate intPredicate;
 
     private MinimumCountPredicate(int minimumCount) {
         this.minimumCount = minimumCount;
-        this.intPredicate = i -> i >= minimumCount;
     }
 
     public static MinimumCountPredicate of(int minimumCount) {
@@ -24,10 +20,6 @@ public final class MinimumCountPredicate implements CharCountPredicate {
 
     public int getMinimumCount() {
         return minimumCount;
-    }
-
-    public IntPredicate getIntPredicate() {
-        return intPredicate;
     }
 
     @Override

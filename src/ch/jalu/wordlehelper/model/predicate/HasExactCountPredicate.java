@@ -2,8 +2,6 @@ package ch.jalu.wordlehelper.model.predicate;
 
 import ch.jalu.wordlehelper.model.Color;
 
-import java.util.function.IntPredicate;
-
 import static ch.jalu.wordlehelper.Constants.WORD_LENGTH;
 
 public final class HasExactCountPredicate implements CharCountPredicate {
@@ -11,19 +9,13 @@ public final class HasExactCountPredicate implements CharCountPredicate {
     private static final HasExactCountPredicate[] CACHE = createCache();
 
     private final int requiredCount;
-    private final IntPredicate intPredicate;
 
     private HasExactCountPredicate(int requiredCount) {
         this.requiredCount = requiredCount;
-        this.intPredicate = i -> i == requiredCount;
     }
 
     public static HasExactCountPredicate of(int requiredCount) {
         return CACHE[requiredCount];
-    }
-
-    public IntPredicate getIntPredicate() {
-        return intPredicate;
     }
 
     public int getRequiredCount() {

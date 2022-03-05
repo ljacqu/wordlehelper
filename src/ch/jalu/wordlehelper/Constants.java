@@ -9,10 +9,10 @@ public final class Constants {
     public static final boolean ENABLE_TIMER = true;
 
     public static final BigDecimal WEIGHT_NEW_EXACT          = new BigDecimal("1");
-    public static final BigDecimal WEIGHT_MIN_TO_EXACT       = new BigDecimal("0.05");
-    public static final BigDecimal WEIGHT_NEW_FULL_EXCLUSION = new BigDecimal("0.1");
+    public static final BigDecimal WEIGHT_MIN_TO_EXACT       = new BigDecimal("0.3");
+    public static final BigDecimal WEIGHT_NEW_FULL_EXCLUSION = new BigDecimal("0.0");
     public static final BigDecimal WEIGHT_NEW_YELLOW         = new BigDecimal("0.8");
-    public static final BigDecimal WEIGHT_CHANGED_YELLOW     = new BigDecimal("0.2");
+    public static final BigDecimal WEIGHT_CHANGED_YELLOW     = new BigDecimal("0.5");
 
     private Constants() {
     }

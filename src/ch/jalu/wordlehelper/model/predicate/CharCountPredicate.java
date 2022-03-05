@@ -2,8 +2,6 @@ package ch.jalu.wordlehelper.model.predicate;
 
 import ch.jalu.wordlehelper.model.Color;
 
-import java.util.function.IntPredicate;
-
 public sealed interface CharCountPredicate
     permits HasExactCountPredicate, MinimumCountPredicate {
 
@@ -12,7 +10,5 @@ public sealed interface CharCountPredicate
     CharCountPredicate merge(CharCountPredicate other);
 
     CharCountPredicate update(Color color);
-
-    IntPredicate getIntPredicate();
 
 }
