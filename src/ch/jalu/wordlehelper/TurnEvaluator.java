@@ -31,6 +31,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static ch.jalu.wordlehelper.Constants.USE_PAST_RESULTS;
 import static ch.jalu.wordlehelper.Constants.WEIGHT_CHANGED_YELLOW;
 import static ch.jalu.wordlehelper.Constants.WEIGHT_MIN_TO_EXACT;
 import static ch.jalu.wordlehelper.Constants.WEIGHT_NEW_EXACT;
@@ -152,13 +153,15 @@ public class TurnEvaluator {
         timer.log("Calc new cell color info");
         System.out.println("(all possibilities): " + scoredByAllPossibleWords);
 
-        List<String> pastResults = FileUtil.readWordFileAsList(Paths.get("past_results.txt"));
-        List<String> stillPossiblePastResults = pastResults.stream()
-            .filter(possibleWordsSet::contains)
-            .toList();
-        TreeMap<BigDecimal, List<String>> scoredByPossiblePastResults = scoreByInfo(possibleWords, stillPossiblePastResults);
-        System.out.println("(past results): " + scoredByPossiblePastResults);
-        System.out.println("(combined): " + combineMaps(scoredByAllPossibleWords, scoredByPossiblePastResults));
+        if (USE_PAST_RESULTS) {
+            List<String> pastResults = FileUtil.readWordFileAsList(Paths.get("past_results.txt"));
+            List<String> stillPossiblePastResults = pastResults.stream()
+                .filter(possibleWordsSet::contains)
+                .toList();
+            TreeMap<BigDecimal, List<String>> scoredByPossiblePastResults = scoreByInfo(possibleWords, stillPossiblePastResults);
+            System.out.println("(past results): " + scoredByPossiblePastResults);
+            System.out.println("(combined): " + combineMaps(scoredByAllPossibleWords, scoredByPossiblePastResults));
+        }
     }
 
     private void findBestWordsForHalving() {
@@ -267,10 +270,6 @@ public class TurnEvaluator {
             groupByNormalizedValueDescending(maxWeightedScore, weightedScoresByWord));
     }
 
-    private record NewInfoResult(TreeMap<BigDecimal, List<String>> unweighted,
-                                 TreeMap<BigDecimal, List<String>> weighted) {
-    }
-
     private TreeMap<BigDecimal, List<String>> newMapWithFilteredValues(Map<BigDecimal, List<String>> map,
                                                                        Set<String> wordsToFilter) {
         TreeMap<BigDecimal, List<String>> result = new TreeMap<>(Collections.reverseOrder());
@@ -362,5 +361,9 @@ public class TurnEvaluator {
         }
         System.out.println();
         return groupByNormalizedValueDescending(BigDecimal.valueOf(halfPossibleWords), scoresByWord);
+    }
+
+    private record NewInfoResult(TreeMap<BigDecimal, List<String>> unweighted,
+                                 TreeMap<BigDecimal, List<String>> weighted) {
     }
 }
