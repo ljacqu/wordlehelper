@@ -42,13 +42,16 @@ public class StartWordEvaluator {
         System.out.println("Read " + starterWords.size() + " starter words, " + allWords.size() + " total words, "
             + pastResults.size() + " result words");
 
+//        System.out.println("Letter frequencies");
         Map<Character, BigDecimal> charFrequencyStarters    = letterFrequencyCalculator.calculateFrequencyOfLetters(starterWords);
         Map<Character, BigDecimal> charFrequencyAll         = letterFrequencyCalculator.calculateFrequencyOfLetters(allWords);
         Map<Character, BigDecimal> charFrequencyPastResults = letterFrequencyCalculator.calculateFrequencyOfLetters(pastResults);
-        System.out.println(invertMap(charFrequencyStarters));
-        System.out.println(invertMap(charFrequencyAll));
-        System.out.println(invertMap(charFrequencyPastResults));
+//        System.out.println(invertMap(charFrequencyStarters));
+//        System.out.println(invertMap(charFrequencyAll));
+//        System.out.println(invertMap(charFrequencyPastResults));
 
+        System.out.println();
+        System.out.println("By letter frequency");
         Map<String, BigDecimal> frequencyScoreStarters    = scoreWordsByLetterFrequency(charFrequencyStarters, starterWords);
         Map<String, BigDecimal> frequencyScoreAll         = scoreWordsByLetterFrequency(charFrequencyAll, starterWords);
         Map<String, BigDecimal> frequencyScorePastResults = scoreWordsByLetterFrequency(charFrequencyPastResults, starterWords);
@@ -56,25 +59,20 @@ public class StartWordEvaluator {
         System.out.println(retainTopKeys(invertMap(frequencyScoreAll), 10));
         System.out.println(retainTopKeys(invertMap(frequencyScorePastResults), 10));
 
-//        TreeMap<BigDecimal, List<String>> wordPairs = evaluator.scoreWordPairs(distroStarters, words);
-//        retainTopKeys(wordPairs, 10);
-//        System.out.println(wordPairs);
+        System.out.println();
+        System.out.println("Word pairs, by letter frequency");
+        TreeMap<BigDecimal, List<String>> wordPairs = scoreWordPairs(charFrequencyAll, starterWords);
+        retainTopKeys(wordPairs, 10);
+        System.out.println(wordPairs);
 
-
-        TreeMap<BigDecimal, List<String>> infoScoreStarters = scoreByInfo(starterWords, starterWords);
-        TreeMap<BigDecimal, List<String>> infoScoreAll = scoreByInfo(starterWords, allWords);
+        System.out.println();
+        System.out.println("Score by info");
+        TreeMap<BigDecimal, List<String>> infoScoreStarters    = scoreByInfo(starterWords, starterWords);
+        TreeMap<BigDecimal, List<String>> infoScoreAll         = scoreByInfo(starterWords, allWords);
         TreeMap<BigDecimal, List<String>> infoScorePastResults = scoreByInfo(starterWords, pastResults);
         System.out.println(retainTopKeys(infoScoreStarters, 10));
         System.out.println(retainTopKeys(infoScoreAll, 10));
         System.out.println(retainTopKeys(infoScorePastResults, 10));
-    }
-
-    private void checkWordsExist(List<String> myWords, Set<String> allWords) {
-        for (String word : myWords) {
-            if (!allWords.contains(word)) {
-                throw new IllegalArgumentException(word);
-            }
-        }
     }
 
     private Map<String, BigDecimal> scoreWordsByLetterFrequency(Map<Character, BigDecimal> frequencyMap, List<String> words) {
@@ -89,7 +87,7 @@ public class StartWordEvaluator {
         return scoreByWord;
     }
 
-    private TreeMap<BigDecimal, List<String>> scoreWordPairs(Map<Character, BigDecimal> score,
+    private TreeMap<BigDecimal, List<String>> scoreWordPairs(Map<Character, BigDecimal> charFrequency,
                                                              List<String> words) {
         ListSortedMultimap<BigDecimal, String> pairsByScore = new ListSortedMultimap<>();
         for (int i = 0; i < words.size(); ++i) {
@@ -98,7 +96,7 @@ public class StartWordEvaluator {
                 String word2 = words.get(j);
                 BigDecimal pairScore = Stream.concat(asCharStream(word1), asCharStream(word2))
                     .distinct()
-                    .map(score::get)
+                    .map(charFrequency::get)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
                 pairsByScore.put(pairScore, word1 + "," + word2);
             }

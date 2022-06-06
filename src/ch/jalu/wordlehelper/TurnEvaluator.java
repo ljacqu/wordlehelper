@@ -70,6 +70,7 @@ public class TurnEvaluator {
     private void run() {
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
+                System.out.println();
                 System.out.print("Input: ");
                 String line = scanner.nextLine().trim();
                 if ("exit".equals(line)) {
@@ -113,8 +114,7 @@ public class TurnEvaluator {
 
     private void evaluate(List<Turn> turns) {
         if (turns.isEmpty()) {
-            throw new IllegalStateException("Need at least one turn! Use SOARE or ARISE (or run "
-                + StartWordEvaluator.class.getSimpleName() + " to find out good starter words)");
+            throw new IllegalStateException("Need at least one turn! Use SOARE or ARISE for example");
         }
         timer.start();
         System.out.println("Processing game:");
@@ -130,8 +130,10 @@ public class TurnEvaluator {
         Set<String> possibleWordsSet = Set.copyOf(possibleWords);
 
         System.out.println();
-        System.out.println("Found " + possibleWords.size() + " possible words:");
-        System.out.println(" " + String.join(", ", possibleWords));
+        System.out.println("Found " + possibleWords.size() + " possible words");
+        if (possibleWords.size() <= 50) {
+            System.out.println(" " + String.join(", ", possibleWords));
+        }
         timer.log("Print console & find possible words");
 
         if (possibleWords.size() < 2) {
