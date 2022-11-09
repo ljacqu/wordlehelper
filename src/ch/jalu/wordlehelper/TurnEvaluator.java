@@ -16,6 +16,8 @@ import ch.jalu.wordlehelper.util.FileUtil;
 import ch.jalu.wordlehelper.util.Timer;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,19 +63,23 @@ public class TurnEvaluator {
     }
 
     public static void main(String... args) {
-        List<String> allWords = FileUtil.readWordFileAsList(Paths.get("all_words.txt"));
+        List<String> allWords = loadWords();
         TurnEvaluator evaluator = new TurnEvaluator(new GameDataCreator(),
             new WordleTurnEvaluator(), new LetterFrequencyCalculator(), allWords);
         evaluator.run();
     }
 
     private void run() {
+        String coloredText = ConsoleGamePrinter.generateConsoleTextForCells(Turn.of("PR?OU!D"));
+        System.out.println("Please enter the first turn (e.g. pr?ou!d for " + coloredText + ")");
+        System.out.println("Type 'help' for help. (Good starting words: SOARE, ARISE)");
+
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
                 System.out.println();
                 System.out.print("Input: ");
                 String line = scanner.nextLine().trim();
-                if ("exit".equals(line)) {
+                if ("exit".equals(line) || "stop".equals(line)) {
                     break;
                 } else if ("pop".equals(line)) {
                     if (!turns.isEmpty()) {
@@ -95,7 +101,7 @@ public class TurnEvaluator {
                     runAndCatchExceptionWithHelpHint(this::findBestWordsForHalving);
                 } else if (!line.isEmpty()) {
                     runAndCatchExceptionWithHelpHint(() -> {
-                        turns.add(Turn.of(line.toUpperCase()));
+                        turns.add(Turn.of(line));
                         evaluate(turns);
                     });
                 }
@@ -117,7 +123,7 @@ public class TurnEvaluator {
             throw new IllegalStateException("Need at least one turn! Use SOARE or ARISE for example");
         }
         timer.start();
-        System.out.println("Processing game:");
+        System.out.println("Current game:");
         ConsoleGamePrinter.printGameToConsole(turns);
 
         WordleResultData resultData = gameDataCreator.constructResultData(turns);
@@ -363,6 +369,18 @@ public class TurnEvaluator {
         }
         System.out.println();
         return groupByNormalizedValueDescending(BigDecimal.valueOf(halfPossibleWords), scoresByWord);
+    }
+
+    private static List<String> loadWords() {
+        Path wordsFile = Paths.get("all_words.txt");
+        if (!Files.exists(wordsFile)) {
+            System.err.println("Did not find all_words.txt; falling back to words.txt.");
+            System.err.println("Note that this does not include all possible words in Worlde! (See README for setup)");
+            System.err.println();
+
+            wordsFile = Paths.get("words.txt");
+        }
+        return FileUtil.readWordFileAsList(wordsFile);
     }
 
     private record NewInfoResult(TreeMap<BigDecimal, List<String>> unweighted,

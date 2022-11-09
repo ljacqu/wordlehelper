@@ -41,24 +41,33 @@ public class Turn {
                 if (currentLetter != null) {
                     cells.add(Cell.gray(currentLetter));
                 }
-                currentLetter = c;
+                currentLetter = Character.toUpperCase(c);
             } else if (c == '?') {
                 cells.add(Cell.yellow(currentLetter));
                 currentLetter = null;
             } else if (c == '!') {
                 cells.add(Cell.green(currentLetter));
                 currentLetter = null;
-            } else {
-                throw new IllegalArgumentException(String.valueOf(c));
+            } else if (!Character.isWhitespace(c)) {
+                throw new IllegalArgumentException("Unexpected character: " + c);
             }
         }
         if (currentLetter != null) {
             cells.add(Cell.gray(currentLetter));
         }
+        validateCells(cells);
         return new Turn(cells);
     }
 
     public List<Cell> getCells() {
         return cells;
+    }
+
+    private static void validateCells(List<Cell> cells) {
+        cells.forEach(cell -> {
+            if (cell.character() == null) {
+                throw new IllegalArgumentException("Error in letter representation. Please try again.");
+            }
+        });
     }
 }

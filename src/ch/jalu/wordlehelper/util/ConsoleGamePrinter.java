@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class ConsoleGamePrinter {
+public final class ConsoleGamePrinter {
 
     // From https://stackoverflow.com/a/5762502
     public static final String ANSI_RESET  = "\u001B[0m";
@@ -23,13 +23,19 @@ public class ConsoleGamePrinter {
     public static final String ANSI_BOLD   = "\u001B[1m";
     public static final String ANSI_UNDERLINE = "\u001B[4m";
 
+    private ConsoleGamePrinter() {
+    }
+
     public static void printGameToConsole(List<Turn> turns) {
         for (Turn turn : turns) {
-            String output = turn.getCells().stream()
-                .map(cell -> getColorCode(cell.color()) + cell.character())
-                .collect(Collectors.joining(" "));
-            System.out.println(" " + output + ANSI_RESET);
+            System.out.println(" " + generateConsoleTextForCells(turn));
         }
+    }
+
+    public static String generateConsoleTextForCells(Turn turn) {
+        return turn.getCells().stream()
+            .map(cell -> getColorCode(cell.color()) + cell.character())
+            .collect(Collectors.joining(" ")) + ANSI_RESET;
     }
 
     public static void printLetterInfoToConsole(Character[] knownChars, Map<Character, CharCountPredicate> predicatesByChar) {
