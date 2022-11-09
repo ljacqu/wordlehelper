@@ -17,6 +17,14 @@ an exclamation mark indicates it was green. A lone letter signifies it evaluated
 For example, input `PR?OU!D` for:  
 !['PROUD' with yellow R and green U](./docs/proud.png)
 
+After every turn, the available letters are shown and words are scored by different metrics to determine the
+best word to play next.
+The letter board gives an overview of available letters: any letters that have mismatched in the past are skipped;
+available letters are shown in green or yellow to reflect what information is available about them.
+Letters are underlined if we know exactly how many times the letter must appear:
+
+![Letter board](./docs/letterboard.png)
+
 Type `help` for more instructions.
 
 ### StartWordEvaluator
