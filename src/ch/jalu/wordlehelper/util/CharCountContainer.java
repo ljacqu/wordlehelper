@@ -15,4 +15,9 @@ public class CharCountContainer {
         Integer result = charCount.get(chr);
         return result == null ? 0 : result;
     }
+
+    @Override
+    public String toString() {
+        return charCount.toString();
+    }
 }

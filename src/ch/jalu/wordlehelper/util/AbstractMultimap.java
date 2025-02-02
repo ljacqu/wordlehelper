@@ -26,4 +26,9 @@ public abstract class AbstractMultimap<K, V, C extends Collection<V>, M extends 
     }
 
     protected abstract C newCollection();
+
+    @Override
+    public String toString() {
+        return backingMap.toString();
+    }
 }
