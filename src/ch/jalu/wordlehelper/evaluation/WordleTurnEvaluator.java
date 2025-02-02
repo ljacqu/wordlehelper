@@ -13,7 +13,7 @@ public class WordleTurnEvaluator {
 
     private final BigDecimal scoreGreen  = BigDecimal.ONE;
     private final BigDecimal scoreYellow = new BigDecimal("0.5");
-    private final BigDecimal scoreGray   = BigDecimal.ZERO;
+    private final BigDecimal scoreGray   = new BigDecimal("0.1");
 
     public BigDecimal calculateScore(String playedWord, String correctWord) {
         int[] stats = evaluate0(playedWord, correctWord);

@@ -13,6 +13,7 @@ public final class Constants {
     public static final BigDecimal WEIGHT_NEW_FULL_EXCLUSION = new BigDecimal("0.1");
     public static final BigDecimal WEIGHT_NEW_YELLOW         = new BigDecimal("1");
     public static final BigDecimal WEIGHT_CHANGED_YELLOW     = new BigDecimal("0.5");
+    public static final BigDecimal WEIGHT_NEW_GREEN_CELL     = new BigDecimal("0.25");
 
     public static final int WORD_LENGTH = 5;
 

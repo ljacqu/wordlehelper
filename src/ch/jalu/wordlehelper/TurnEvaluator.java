@@ -39,6 +39,7 @@ import static ch.jalu.wordlehelper.Constants.WEIGHT_CHANGED_YELLOW;
 import static ch.jalu.wordlehelper.Constants.WEIGHT_MIN_TO_EXACT;
 import static ch.jalu.wordlehelper.Constants.WEIGHT_NEW_EXACT;
 import static ch.jalu.wordlehelper.Constants.WEIGHT_NEW_FULL_EXCLUSION;
+import static ch.jalu.wordlehelper.Constants.WEIGHT_NEW_GREEN_CELL;
 import static ch.jalu.wordlehelper.Constants.WEIGHT_NEW_YELLOW;
 import static ch.jalu.wordlehelper.Constants.WORD_LENGTH;
 import static ch.jalu.wordlehelper.util.CollectionUtil.combineMaps;
@@ -93,7 +94,7 @@ public class TurnEvaluator {
                     System.out.println("new  - clear all turns");
                     System.out.println("run  - run evaluation again");
                     System.out.println("half - find out which word will most likely halve the set of possible words");
-                    System.out.println("list - list all possible combinations with the current known facts");
+                    System.out.println("list - list all possible patterns with the current known facts");
                 } else if ("new".equals(line)) {
                     turns.clear();
                     System.out.println("Removed all turns. (Good starting words: SOARE, ARISE)");
@@ -102,7 +103,7 @@ public class TurnEvaluator {
                 } else if ("half".equals(line)) {
                     runAndCatchExceptionWithHelpHint(this::findBestWordsForHalving);
                 } else if ("list".equals(line)) {
-                    runAndCatchExceptionWithHelpHint(this::listWordCombinations);
+                    runAndCatchExceptionWithHelpHint(this::listAllWordPatterns);
                 } else if (!line.isEmpty()) {
                     runAndCatchExceptionWithHelpHint(() -> {
                         turns.add(Turn.of(line));
@@ -193,7 +194,7 @@ public class TurnEvaluator {
         }
     }
 
-    private void listWordCombinations() {
+    private void listAllWordPatterns() {
         WordleResultData resultData = gameDataCreator.constructResultData(turns);
         LetterPermuter.generateAllCombinations(resultData).forEach(System.out::println);
     }
@@ -330,8 +331,10 @@ public class TurnEvaluator {
                 } else if (newPredicate instanceof MinimumCountPredicate newMinPredicate) {
                     if (oldPredicate instanceof MinimumCountPredicate oldMinPredicate) {
                         if (oldMinPredicate.getMinimumCount() < newMinPredicate.getMinimumCount()) {
-                            score = score.add(WEIGHT_CHANGED_YELLOW);
-                            scoreWeighted = scoreWeighted.add(WEIGHT_CHANGED_YELLOW.multiply(charFrequency));
+                            BigDecimal difference =
+                                BigDecimal.valueOf(newMinPredicate.getMinimumCount() - oldMinPredicate.getMinimumCount());
+                            score = score.add(WEIGHT_CHANGED_YELLOW).multiply(difference);
+                            scoreWeighted = scoreWeighted.add(WEIGHT_CHANGED_YELLOW.multiply(charFrequency).multiply(difference));
                         }
                     } else if (oldPredicate == null) {
                         score = score.add(WEIGHT_NEW_YELLOW);
@@ -340,6 +343,17 @@ public class TurnEvaluator {
                 }
             }
         }
+
+        int newGreenCells = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            Cell cell = cells.get(i);
+            if (cell.color() == Color.GREEN && resultData.knownCharactersByIndex()[i] == null) {
+                ++newGreenCells;
+            }
+        }
+        score = score.add(WEIGHT_NEW_GREEN_CELL.multiply(BigDecimal.valueOf(newGreenCells)));
+        scoreWeighted = scoreWeighted.add(WEIGHT_NEW_GREEN_CELL.multiply(BigDecimal.valueOf(newGreenCells)));
+
         return new BigDecimal[]{
             score, scoreWeighted
         };
