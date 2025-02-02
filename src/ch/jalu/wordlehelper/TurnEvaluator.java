@@ -96,7 +96,7 @@ public class TurnEvaluator {
                     System.out.println("list - list all possible combinations with the current known facts");
                 } else if ("new".equals(line)) {
                     turns.clear();
-                    System.out.println("Removed all turns");
+                    System.out.println("Removed all turns. (Good starting words: SOARE, ARISE)");
                 } else if ("run".equals(line)) {
                     runAndCatchExceptionWithHelpHint(() -> evaluate(turns));
                 } else if ("half".equals(line)) {
