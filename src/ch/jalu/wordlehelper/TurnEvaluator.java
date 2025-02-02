@@ -2,6 +2,7 @@ package ch.jalu.wordlehelper;
 
 import ch.jalu.wordlehelper.evaluation.GameDataCreator;
 import ch.jalu.wordlehelper.evaluation.LetterFrequencyCalculator;
+import ch.jalu.wordlehelper.evaluation.LetterPermuter;
 import ch.jalu.wordlehelper.evaluation.WordleTurnEvaluator;
 import ch.jalu.wordlehelper.model.Cell;
 import ch.jalu.wordlehelper.model.Color;
@@ -92,6 +93,7 @@ public class TurnEvaluator {
                     System.out.println("new  - clear all turns");
                     System.out.println("run  - run evaluation again");
                     System.out.println("half - find out which word will most likely halve the set of possible words");
+                    System.out.println("list - list all possible combinations with the current known facts");
                 } else if ("new".equals(line)) {
                     turns.clear();
                     System.out.println("Removed all turns");
@@ -99,6 +101,8 @@ public class TurnEvaluator {
                     runAndCatchExceptionWithHelpHint(() -> evaluate(turns));
                 } else if ("half".equals(line)) {
                     runAndCatchExceptionWithHelpHint(this::findBestWordsForHalving);
+                } else if ("list".equals(line)) {
+                    runAndCatchExceptionWithHelpHint(this::listWordCombinations);
                 } else if (!line.isEmpty()) {
                     runAndCatchExceptionWithHelpHint(() -> {
                         turns.add(Turn.of(line));
@@ -187,6 +191,11 @@ public class TurnEvaluator {
         } else {
             throw new IllegalStateException("Found " + possibleWords.size() + " possible words, which is not within bounds for this action");
         }
+    }
+
+    private void listWordCombinations() {
+        WordleResultData resultData = gameDataCreator.constructResultData(turns);
+        LetterPermuter.generateAllCombinations(resultData).forEach(System.out::println);
     }
 
     private TreeMap<BigDecimal, List<String>> scoreByInfo(Collection<String> givenWords,
