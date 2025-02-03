@@ -3,6 +3,7 @@ package ch.jalu.wordlehelper;
 import ch.jalu.wordlehelper.evaluation.GameDataCreator;
 import ch.jalu.wordlehelper.evaluation.LetterFrequencyCalculator;
 import ch.jalu.wordlehelper.evaluation.LetterPermuter;
+import ch.jalu.wordlehelper.evaluation.SplitterWordFinder;
 import ch.jalu.wordlehelper.evaluation.WordleTurnEvaluator;
 import ch.jalu.wordlehelper.model.Cell;
 import ch.jalu.wordlehelper.model.Color;
@@ -104,6 +105,8 @@ public class TurnEvaluator {
                     runAndCatchExceptionWithHelpHint(this::findBestWordsForHalving);
                 } else if ("list".equals(line)) {
                     runAndCatchExceptionWithHelpHint(this::listAllWordPatterns);
+                } else if ("try".equals(line)) {
+                    runAndCatchExceptionWithHelpHint(this::findSplittingResult);
                 } else if (!line.isEmpty()) {
                     runAndCatchExceptionWithHelpHint(() -> {
                         turns.add(Turn.of(line));
@@ -197,6 +200,18 @@ public class TurnEvaluator {
     private void listAllWordPatterns() {
         WordleResultData resultData = gameDataCreator.constructResultData(turns);
         LetterPermuter.generateAllCombinations(resultData).forEach(System.out::println);
+    }
+
+    private void findSplittingResult() {
+        WordleResultData resultData = gameDataCreator.constructResultData(turns);
+        TreeMap<BigDecimal, List<String>> resultByScore =
+                SplitterWordFinder.split(allWords, resultData, wordleTurnEvaluator, false);
+        System.out.println(resultByScore);
+        if (resultByScore.isEmpty() || resultByScore.firstKey().compareTo(BigDecimal.ZERO) != 0) {
+            resultByScore = SplitterWordFinder.split(allWords, resultData, wordleTurnEvaluator, true);
+            System.out.println("Split results with any word:");
+            System.out.println(resultByScore);
+        }
     }
 
     private TreeMap<BigDecimal, List<String>> scoreByInfo(Collection<String> givenWords,
